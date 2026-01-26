@@ -1,45 +1,85 @@
-# Tournament Management System (Backend – Initial Setup)
+# Tournament Management System (Backend)
 
-This repository contains the **initial backend foundation** for a tournament management system.  
-At the current stage, the project focuses on **database design, PostgreSQL setup, and basic Node.js initialization**.
+This repository contains the **early backend foundation** for a tournament management system designed to manage taekwondo (or similar sports) tournaments.
+
+At this stage, the project focuses on:
+- solid **database design**
+- **PostgreSQL setup with sample data**
+- **Node.js + Express backend initialization**
+- **read-only APIs** to validate the data model
+
+No frontend, authentication, or business logic has been implemented yet.
+
+---
+
+## Purpose of This Phase
+
+The goal of the current phase is to:
+- validate the database schema
+- expose data via simple APIs
+- identify schema/query issues early
+- build a stable backend foundation before UI or complex logic
+
+This avoids frequent schema changes later when features like matchmaking or payments are added.
 
 ---
 
 ## Current Status
 
-**Initial setup phase**
-
-Implemented so far:
+### Implemented
+- PostgreSQL database schema (`schema.sql`)
+- Sample dummy data for testing (`testdata.sql`)
 - Node.js project initialized using npm
-- PostgreSQL database schema designed (`schema.sql`)
-- Sample dummy data added for testing (`testdata.sql`)
-- Git repository set up with proper `.gitignore`
+- Express server setup
+- PostgreSQL connection using `pg`
+- Read-only backend API (GET endpoints)
+- Clean separation of routes, controllers, and DB layer
+- `.gitignore` configured for environment safety
 
-Not implemented yet:
-- Backend API (Express)
-- Authentication
-- Frontend
-- Business logic (registrations, matchmaking, approvals)
+### Not Implemented Yet
+- Write APIs (POST / PUT / DELETE)
+- Authentication & authorization
+- Role-based access (admin / instructor)
+- Frontend UI
+- Registration approvals
+- Matchmaking logic
+- Payments or payment gateway integration
 
 ---
 
-## Tech Stack (Current)
+## Tech Stack
 
+**Backend**
 - Node.js
-- npm
+- Express.js
 - PostgreSQL
+- pg (node-postgres)
+- dotenv
+
+**Other**
+- npm
 - SQL
 
 ---
 
 ## Project Structure
-.       
-├── schema.sql # Database schema           
-├── testdata.sql # Dummy data for testing       
-├── package.json         
-├── package-lock.json       
-├── .gitignore         
-└── README.md       
+
+```text
+backend/
+├── controllers/
+│   └── tournaments.controller.js
+├── routes/
+│   └── tournaments.routes.js
+├── db/
+│   └── pool.js
+├── schema.sql
+├── testdata.sql
+├── index.js
+├── package.json
+├── package-lock.json
+├── .env
+└── README.me   
+```  
 
 
 Ignored via `.gitignore`:
@@ -56,3 +96,7 @@ Ignored via `.gitignore`:
    ```sql
    \i schema.sql
     ```
+3. Load dataset
+   ```sql
+   \i testdata.sql
+   ```
