@@ -5,6 +5,7 @@ exports.getAllTournaments = async (req, res) => {
     const result = await pool.query(
       "SELECT id, name, location, event_date, registration_deadline,status,created_by,created_at FROM tournaments ORDER BY event_date DESC"
     );
+    // console.log(result);
 
     res.status(200).json(result.rows);
   } catch (error) {
