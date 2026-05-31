@@ -41,6 +41,10 @@ const Navbar = () => {
             const res = await fetch('http://localhost:4000/students')
             const data = await res.json();
             const display = document.querySelector('.infodisplay');
+            if(!data.success){
+                display.innerHTML = data.message;
+                return;
+            }
             const ultemplate = `
             <ul>
                 ${Object.entries(data[0]).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
@@ -60,6 +64,10 @@ const Navbar = () => {
             const res = await fetch('http://localhost:4000/users')
             const data = await res.json();
             const display = document.querySelector('.infodisplay');
+            if(!data.success){
+                display.innerHTML = data.message;
+                return;
+            }
             const ultemplate = `
             <ul>
                 ${Object.entries(data[0]).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}

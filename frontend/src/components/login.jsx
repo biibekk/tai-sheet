@@ -30,7 +30,7 @@ export default function AuthPage() {
 
     const data = await res.json();
     if(data.success == true) console.log("logged in");
-    else console.log(`logged in: ${data.success}`)
+    else console.log(`logged in: ${data.success}, msg: ${data.message}`)
   };
 
   const handleRegister = async (e) => {
