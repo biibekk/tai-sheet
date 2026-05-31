@@ -366,3 +366,17 @@ WHERE t.name='Delhi Open 2026'
 AND c.age_min = 11
 AND c.gender = 'FEMALE'
 AND sp.rn BETWEEN 43 AND 48;
+
+
+
+-- ALTERATION
+ALTER TABLE categories
+ADD COLUMN display_name VARCHAR(255);
+
+UPDATE categories
+SET display_name =
+    gender || ' | ' ||
+    age_min || '-' || age_max || ' Years | ' ||
+    weight_min || '-' || weight_max || 'kg | ' ||
+    belt_min || '-' || belt_max || ' | ' ||
+    COALESCE(allowed_experience::text, 'ALL');

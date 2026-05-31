@@ -6,6 +6,10 @@ const Navbar = () => {
 
     const handleHomeClick = () => {
         setActive(0);
+        const categorySelect = document.querySelector('.student-category-selection');
+        categorySelect.style.display = 'none';
+        const searchCategoryStudentBtn = document.querySelector('.search-student-category-btn');
+        searchCategoryStudentBtn.style.display = 'none';
         const display = document.querySelector('.infodisplay');
         display.innerHTML = '';
     }
@@ -72,6 +76,52 @@ const Navbar = () => {
         try {
             const res = await fetch('http://localhost:4000/categories')
             const data = await res.json();
+
+
+            const categorySelect = document.querySelector('.student-category-selection');
+            categorySelect.style.display = 'block';
+            const options = data.map(row => `
+                <option value="${row.id}">${row.display_name}</option>
+            `).join('');
+            categorySelect.innerHTML = options;
+
+            const searchCategoryStudentBtn = document.querySelector('.search-student-category-btn');
+            searchCategoryStudentBtn.style.display = 'block';
+
+            const searchCategoryStudentResult = document.querySelector('.search-student-category-result');
+            searchCategoryStudentResult.style.display = 'block';
+
+            searchCategoryStudentBtn.addEventListener('click', async () => {
+                const categoryId = categorySelect.value;
+                // console.log(categoryId);
+                const result = await fetch(`http://localhost:4000/draw/categories/${categoryId}/generate-draw`,{
+                    method: 'POST',
+                    // headers: {
+                    //     'Content-Type': 'application/json'
+                    // },
+                    // body: JSON.stringify({
+                    //     categoryId: categoryId
+                    // })
+                });
+                if(result.ok){
+                    const studentsDrawResult = await result.json();
+                    const drawTemplate = `
+                    <h3>Total Participants: ${studentsDrawResult.totalParticipants}</h3>
+                    ${studentsDrawResult.students.map(row => `
+                        <ul style ="list-style-type: square;">
+                            ${Object.entries(row).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+                        </ul>
+                    `).join('')}
+
+                    `;
+                    searchCategoryStudentResult.innerHTML = drawTemplate;
+                }else{
+                    searchCategoryStudentResult.innerHTML = 'Error generating draw';
+                }
+
+            })
+
+
             const display = document.querySelector('.infodisplay');
             const ultemplate = `
             ${data.map(row => `

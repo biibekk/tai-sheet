@@ -5,7 +5,7 @@ exports.getAllCategories = async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM categories"
     );
-    console.log(result);
+    // console.log(result);
 
     res.status(200).json(result.rows);
   } catch (error) {

@@ -6,7 +6,7 @@ class DrawService {
         const participants =
             await this.getParticipants(categoryId);
 
-        console.log(participants);
+        // console.log(participants);
 
         if (participants.length < 2) {
             throw new Error(
@@ -17,6 +17,7 @@ class DrawService {
         return {
             totalParticipants:
                 participants.length
+            , students: participants
         };
     }
 
