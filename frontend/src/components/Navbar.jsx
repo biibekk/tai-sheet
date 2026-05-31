@@ -19,7 +19,7 @@ const Navbar = () => {
             // display.innerHTML = JSON.stringify(data[0], null, 2);
             const ultemplate = `
             <ul>
-                ${Object.entries(data[0]).map(([key,value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+                ${Object.entries(data[0]).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
             </ul>
             `;
             display.innerHTML = ultemplate;
@@ -37,7 +37,7 @@ const Navbar = () => {
             const display = document.querySelector('.infodisplay');
             const ultemplate = `
             <ul>
-                ${Object.entries(data[0]).map(([key,value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+                ${Object.entries(data[0]).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
             </ul>
             `;
             display.innerHTML = ultemplate;
@@ -56,7 +56,7 @@ const Navbar = () => {
             const display = document.querySelector('.infodisplay');
             const ultemplate = `
             <ul>
-                ${Object.entries(data[0]).map(([key,value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+                ${Object.entries(data[0]).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
             </ul>
             `;
             display.innerHTML = ultemplate;
@@ -67,6 +67,28 @@ const Navbar = () => {
         }
     }
 
+    const handleCategoryClick = async () => {
+        setActive(4);
+        try {
+            const res = await fetch('http://localhost:4000/categories')
+            const data = await res.json();
+            const display = document.querySelector('.infodisplay');
+            const ultemplate = `
+            ${data.map(row => `
+                <ul>
+                    ${Object.entries(row).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+                </ul>
+            `).join('')}
+
+            `;
+            display.innerHTML = ultemplate;
+            // display.innerHTML = JSON.stringify(data[0]);
+            console.log(data);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+        }
+    }
+
     return (
         <nav>
             <ul className='navul'>
@@ -74,6 +96,7 @@ const Navbar = () => {
                 <li className={active === 1 ? 'active' : ''} onClick={() => handleTournamentClick()}>Tournaments</li>
                 <li className={active === 2 ? 'active' : ''} onClick={() => handleStudentsClick()}>Students</li>
                 <li className={active === 3 ? 'active' : ''} onClick={() => handleUsersClick()}>Users</li>
+                <li className={active === 4 ? 'active' : ''} onClick={() => handleCategoryClick()}>Categories</li>
             </ul>
         </nav>
     )

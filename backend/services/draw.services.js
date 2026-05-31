@@ -2,7 +2,11 @@ const pool = require("../db/pool")
 
 class DrawService {
     async generateDraw(categoryId) {
-        const participants = await this.getParticipants(categoryId);
+
+        const participants =
+            await this.getParticipants(categoryId);
+
+        console.log(participants);
 
         if (participants.length < 2) {
             throw new Error(
@@ -11,13 +15,14 @@ class DrawService {
         }
 
         return {
-            totalParticipants: participants.length
+            totalParticipants:
+                participants.length
         };
     }
-    
+
     async getParticipants(categoryId) {
         const result =
-            pool.query(
+            await pool.query(
                 `
         SELECT
         r.id as registration_id,
