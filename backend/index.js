@@ -7,6 +7,7 @@ const usersRoutes = require("./routes/users.routes");
 const studentsRoutes = require("./routes/students.routes");
 const drawRoutes = require("./routes/draw.routes");
 const categoriesRoutes = require("./routes/categories.routes");
+const authRoutes = require("./routes/auth.routes");
 
 const app = express();
 app.use(cors());
@@ -30,6 +31,8 @@ app.use("/students", studentsRoutes);
 app.use("/draw", drawRoutes);
 
 app.use("/categories", categoriesRoutes);
+
+app.use("/auth", authRoutes)
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

@@ -10,6 +10,8 @@ const Navbar = () => {
         categorySelect.style.display = 'none';
         const searchCategoryStudentBtn = document.querySelector('.search-student-category-btn');
         searchCategoryStudentBtn.style.display = 'none';
+        const searchCategoryStudentResult = document.querySelector('.search-student-category-result');
+        searchCategoryStudentResult.style.display = 'none';
         const display = document.querySelector('.infodisplay');
         display.innerHTML = '';
     }
