@@ -35,7 +35,13 @@ const Navbar = () => {
             const res = await fetch('http://localhost:4000/students')
             const data = await res.json();
             const display = document.querySelector('.infodisplay');
-            display.innerHTML = JSON.stringify(data[0], null, 2);
+            const ultemplate = `
+            <ul>
+                ${Object.entries(data[0]).map(([key,value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+            </ul>
+            `;
+            display.innerHTML = ultemplate;
+            // display.innerHTML = JSON.stringify(data[0], null, 2);
             console.log(data);
         } catch (error) {
             console.error("Error fetching students:", error);
@@ -48,7 +54,13 @@ const Navbar = () => {
             const res = await fetch('http://localhost:4000/users')
             const data = await res.json();
             const display = document.querySelector('.infodisplay');
-            display.innerHTML = JSON.stringify(data[0]);
+            const ultemplate = `
+            <ul>
+                ${Object.entries(data[0]).map(([key,value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+            </ul>
+            `;
+            display.innerHTML = ultemplate;
+            // display.innerHTML = JSON.stringify(data[0]);
             console.log(data);
         } catch (error) {
             console.error("Error fetching users:", error);

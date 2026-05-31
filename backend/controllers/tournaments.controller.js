@@ -3,7 +3,7 @@ const pool = require("../db/pool");
 exports.getAllTournaments = async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, name, location, event_date, registration_deadline,status,created_by,created_at FROM tournaments ORDER BY event_date DESC"
+      "SELECT id, name, location, start_date, end_date, registration_deadline,status,created_by,created_at FROM tournaments ORDER BY start_date DESC"
     );
     // console.log(result);
 

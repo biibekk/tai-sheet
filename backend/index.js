@@ -5,6 +5,7 @@ const pool = require("./db/pool");
 const tournamentsRoutes = require("./routes/tournaments.routes");
 const usersRoutes = require("./routes/users.routes");
 const studentsRoutes = require("./routes/students.routes");
+const drawRoutes = require("./routes/draw.routes");
 
 const app = express();
 app.use(cors());
@@ -22,6 +23,10 @@ app.get("/", (req, res) => {
 app.use("/tournaments", tournamentsRoutes);
 app.use("/users", usersRoutes);
 app.use("/students", studentsRoutes);
+
+// mount router in main Express app
+// endpoint: POST /draw/categories/:categoryId/generate-draw
+app.use("/draw", drawRoutes)
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

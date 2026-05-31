@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TYPE user_role AS ENUM ('ADMIN', 'INSTRUCTOR');
 
-CREATE TYPE gender AS ENUM ('MALE', 'FEMALE', 'MIXED');
+CREATE TYPE gender AS ENUM ('MALE', 'FEMALE');
 
 CREATE TYPE tournament_status AS ENUM (
 'DRAFT',
@@ -111,7 +111,8 @@ CREATE TABLE tournaments (
 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 name VARCHAR(200) NOT NULL,
 location VARCHAR(200),
-event_date DATE NOT NULL,
+start_date DATE NOT NULL,
+end_date DATE NOT NULL,
 registration_deadline DATE,
 status tournament_status DEFAULT 'DRAFT',
 created_by UUID REFERENCES users(id),
@@ -131,7 +132,7 @@ belt_min VARCHAR(50),
 belt_max VARCHAR(50),
 weight_min DECIMAL(5,2),
 weight_max DECIMAL(5,2),
-gender gender DEFAULT 'MIXED',
+gender gender NOT NULL,
 allowed_experience fight_experience,
 created_at TIMESTAMP DEFAULT NOW(),
 UNIQUE (
@@ -226,12 +227,9 @@ CREATE INDEX idx_students_instructor ON students(instructor_id);
 CREATE INDEX idx_students_dojo ON students(dojo_id);
 
 CREATE INDEX idx_registrations_tournament ON registrations(tournament_id);
-CREATE INDEX idx_registrations_instructor ON registrations(instructor_id);
-CREATE INDEX idx_registrations_approval ON registrations(approval_status);
 
 CREATE INDEX idx_categories_tournament ON categories(tournament_id);
 
 CREATE INDEX idx_matches_tournament ON matches(tournament_id);
 CREATE INDEX idx_matches_category ON matches(category_id);
-
-CREATE INDEX idx_payments_status ON payments(status);
+CREATE INDEX idx_matches_next_match ON matches(next_match_id);
