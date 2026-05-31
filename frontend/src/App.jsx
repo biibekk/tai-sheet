@@ -6,8 +6,7 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className='main'>
-        
+      <div className="infodisplay">
       </div>
     </>
   )

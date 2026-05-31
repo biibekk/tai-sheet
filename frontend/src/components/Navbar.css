@@ -1,4 +1,4 @@
-ul{
+.navul {
     list-style: none;
     display: flex;
     justify-content:center;
@@ -7,7 +7,7 @@ ul{
     /* background-color: #f5f5f5; */
 }
 
-ul li {
+.navul li {
     margin: 0 2rem;
     font-size: 1.2rem;
     font-weight: 500;
@@ -18,8 +18,8 @@ ul li {
     border-radius: 10px;
 }
 
-ul li:hover,
-ul li.active {
+.navul li:hover,
+.navul li.active {
     color: white;
     background-color: #007bff;
 }
