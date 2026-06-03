@@ -368,7 +368,6 @@ AND c.gender = 'FEMALE'
 AND sp.rn BETWEEN 43 AND 48;
 
 
-
 -- ALTERATION
 ALTER TABLE categories
 ADD COLUMN display_name VARCHAR(255);
@@ -380,3 +379,12 @@ SET display_name =
     weight_min || '-' || weight_max || 'kg | ' ||
     belt_min || '-' || belt_max || ' | ' ||
     COALESCE(allowed_experience::text, 'ALL');
+
+
+-- Alteration - instructors in users
+ALTER TABLE users
+ADD COLUMN approval_status VARCHAR(20) DEFAULT 'PENDING';
+
+UPDATE users
+SET approval_status = 'APPROVED'
+WHERE id = $1;

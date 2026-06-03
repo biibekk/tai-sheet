@@ -41,6 +41,38 @@ class AuthService {
             },
         };
     };
+
+    async register(data) {
+        console.log(data);
+        // return {
+        //     success: true,
+        //     message: "User registered successfully"
+        // };
+        const { fullName, email, phone, beltRank, academyName, city, password, confirmPassword } = data;
+        if (password !== confirmPassword) {
+            throw new Error("Passwords do not match");
+        }
+        if (phone.length !== 10) {
+            throw new Error("Invalid phone number");
+        }
+        const emailcheck = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
+        const usercheck = emailcheck.rows[0];
+        if (usercheck) {
+            throw new Error("Email already exists");
+        }
+
+        const pswdhash = await bcrypt.hash(password, 10);
+
+        const sql = `INSERT INTO users(name, email, phone, password_hash, role)
+        VALUES ($1, $2, $3, $4, 'INSTRUCTOR')`
+
+        await pool.query(sql, [fullName, email, phone, pswdhash])
+
+        return {
+            success: true,
+            message: "User registered successfully"
+        }
+    };
 }
 
 module.exports = new AuthService();
