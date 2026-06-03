@@ -1,6 +1,5 @@
 // import './App.css'
 import { useState } from 'react'
-import AuthPage from './components/authentication'
 import Navbar from './components/Navbar'
 import Home from './components/home'
 function App() {

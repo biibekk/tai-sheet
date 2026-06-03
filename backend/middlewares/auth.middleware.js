@@ -3,7 +3,9 @@ require("dotenv").config();
 
 class AuthMiddleware {
     verifyToken(req, res, next) {
+        // need to send token from the frontend
         const authHeader = req.headers.authorization;
+        console.log(authHeader)
 
         if(!authHeader) return res.status(401).json({success: false, message: "You are not logged in!"});
 

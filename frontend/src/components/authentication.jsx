@@ -165,7 +165,7 @@ export default function AuthPage({ setIsLoggedIn, setPage }) {
                     {activeTab === "login" && <LoginForm />} 
                     I can create a const LoginForm = () => {return (<form></form>)}
                 */}
-                {/* Login */}
+                {/* Login  - if activeTab is login then render the login form - CONDITIONAL RENDERING*/}
                 {activeTab === "login" && (
                     <form onSubmit={handleLogin} className="p-5 space-y-4">
                         <div>

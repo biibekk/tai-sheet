@@ -40,7 +40,12 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, setPage }) => {
     const handleStudentsClick = async () => {
         setActive(2);
         try {
-            const res = await fetch('http://localhost:4000/students')
+            const res = await fetch('http://localhost:4000/students',{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    user: localStorage.getItem("user")
+                }
+            })
             const data = await res.json();
             const display = document.querySelector('.infodisplay');
             if (!data.success) {
@@ -49,7 +54,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, setPage }) => {
             }
             const ultemplate = `
             <ul>
-                ${Object.entries(data[0]).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+                ${Object.entries(data.message[0]).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
             </ul>
             `;
             display.innerHTML = ultemplate;
@@ -63,21 +68,45 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, setPage }) => {
     const handleUsersClick = async () => {
         setActive(3);
         try {
-            const res = await fetch('http://localhost:4000/users')
+            // getting the JWT token from local storage and sending it in the request headers.
+            const token = localStorage.getItem("token");
+
+            // Bearer token authentication
+            // JWT authentication because the token happens to be a JWT
+            // stateless authentication, because the server doesn't keep a session; it verifies the token on every request.
+            const res = await fetch('http://localhost:4000/users', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
             const data = await res.json();
+            // console.log(data)
             const display = document.querySelector('.infodisplay');
             if (!data.success) {
                 display.innerHTML = data.message;
                 return;
             }
+
             const ultemplate = `
-            <ul>
-                ${Object.entries(data[0]).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
-            </ul>
+            ${data.message.map(row => `
+                <ul>
+                    ${Object.entries(row).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+                </ul>
+            `).join('')}
             `;
+            {/* 
+            2nd method
+            let ultemplate = '';
+            data.message.forEach(row => {
+                ultemplate += `
+                    <ul>
+                        ${Object.entries(row).map(([key, value]) => `<li><b>${key}:</b>${value}</li>`).join('')}
+                    </ul>
+                `;
+            })
+            */}
             display.innerHTML = ultemplate;
             // display.innerHTML = JSON.stringify(data[0]);
-            console.log(data);
         } catch (error) {
             console.error("Error fetching users:", error);
         }
