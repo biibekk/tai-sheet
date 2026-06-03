@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function AuthPage() {
+export default function AuthPage({ setIsLoggedIn, setPage }) {
     const [activeTab, setActiveTab] = useState("login");
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
@@ -43,11 +43,20 @@ export default function AuthPage() {
         });
 
         const data = await res.json();
-        console.log(data)
+        // console.log(data)
         if (data.success == true) {
-            // console.log("logged in");
+            // console.log(data);
             setMessage("Logged in successfully");
             setMessageType("success");
+
+            const token = data.token;
+            const user = data.user;
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
+
+            setIsLoggedIn(true);
+
+            setPage("home");
         }
         else {
             // console.log(`logged in: ${data.success}, msg: ${data.message}`)

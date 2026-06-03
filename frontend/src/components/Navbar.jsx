@@ -1,7 +1,8 @@
 import './Navbar.css'
 import { useState } from 'react'
 
-const Navbar = () => {
+// receiving props
+const Navbar = ({ isLoggedIn, setIsLoggedIn, setPage }) => {
     const [active, setActive] = useState(0);
 
     const handleHomeClick = () => {
@@ -14,6 +15,7 @@ const Navbar = () => {
         searchCategoryStudentResult.style.display = 'none';
         const display = document.querySelector('.infodisplay');
         display.innerHTML = '';
+        setPage("home");
     }
 
     const handleTournamentClick = async () => {
@@ -41,7 +43,7 @@ const Navbar = () => {
             const res = await fetch('http://localhost:4000/students')
             const data = await res.json();
             const display = document.querySelector('.infodisplay');
-            if(!data.success){
+            if (!data.success) {
                 display.innerHTML = data.message;
                 return;
             }
@@ -64,7 +66,7 @@ const Navbar = () => {
             const res = await fetch('http://localhost:4000/users')
             const data = await res.json();
             const display = document.querySelector('.infodisplay');
-            if(!data.success){
+            if (!data.success) {
                 display.innerHTML = data.message;
                 return;
             }
@@ -104,7 +106,7 @@ const Navbar = () => {
             searchCategoryStudentBtn.addEventListener('click', async () => {
                 const categoryId = categorySelect.value;
                 // console.log(categoryId);
-                const result = await fetch(`http://localhost:4000/draw/categories/${categoryId}/generate-draw`,{
+                const result = await fetch(`http://localhost:4000/draw/categories/${categoryId}/generate-draw`, {
                     method: 'POST',
                     // headers: {
                     //     'Content-Type': 'application/json'
@@ -113,7 +115,7 @@ const Navbar = () => {
                     //     categoryId: categoryId
                     // })
                 });
-                if(result.ok){
+                if (result.ok) {
                     const studentsDrawResult = await result.json();
                     const drawTemplate = `
                     <h3>Total Participants: ${studentsDrawResult.totalParticipants}</h3>
@@ -125,7 +127,7 @@ const Navbar = () => {
 
                     `;
                     searchCategoryStudentResult.innerHTML = drawTemplate;
-                }else{
+                } else {
                     searchCategoryStudentResult.innerHTML = 'Error generating draw';
                 }
 
@@ -149,14 +151,26 @@ const Navbar = () => {
         }
     }
 
+    const handleLogoutClick = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        setIsLoggedIn(false);
+    }
+
     return (
         <nav>
             <ul className='navul'>
                 <li className={active === 0 ? 'active' : ''} onClick={() => handleHomeClick()}>Home</li>
-                <li className={active === 1 ? 'active' : ''} onClick={() => handleTournamentClick()}>Tournaments</li>
-                <li className={active === 2 ? 'active' : ''} onClick={() => handleStudentsClick()}>Students</li>
-                <li className={active === 3 ? 'active' : ''} onClick={() => handleUsersClick()}>Users</li>
-                <li className={active === 4 ? 'active' : ''} onClick={() => handleCategoryClick()}>Categories</li>
+                {isLoggedIn && (
+                    <>
+                        <li className={active === 1 ? 'active' : ''} onClick={() => handleTournamentClick()}>Tournaments</li>
+                        <li className={active === 2 ? 'active' : ''} onClick={() => handleStudentsClick()}>Students</li>
+                        <li className={active === 3 ? 'active' : ''} onClick={() => handleUsersClick()}>Users</li>
+                        <li className={active === 4 ? 'active' : ''} onClick={() => handleCategoryClick()}>Categories</li>
+                        <li onClick={handleLogoutClick}>Logout</li>
+                    </>
+                )}
             </ul>
         </nav>
     )
