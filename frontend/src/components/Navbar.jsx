@@ -43,7 +43,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, setPage }) => {
             const res = await fetch('http://localhost:4000/students',{
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    user: localStorage.getItem("user")
                 }
             })
             const data = await res.json();
