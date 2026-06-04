@@ -31,7 +31,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, setPage }) => {
             </ul>
             `;
             display.innerHTML = ultemplate;
-            console.log(data[0]);
+            // console.log(data[0]);
         } catch (error) {
             console.error("Error fetching tournaments:", error);
         }
@@ -59,7 +59,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, setPage }) => {
             `;
             display.innerHTML = ultemplate;
             // display.innerHTML = JSON.stringify(data[0], null, 2);
-            console.log(data);
+            // console.log(data);
         } catch (error) {
             console.error("Error fetching students:", error);
         }
@@ -174,7 +174,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn, setPage }) => {
             `;
             display.innerHTML = ultemplate;
             // display.innerHTML = JSON.stringify(data[0]);
-            console.log(data);
+            // console.log(data);
         } catch (error) {
             console.error("Error fetching categories:", error);
         }
