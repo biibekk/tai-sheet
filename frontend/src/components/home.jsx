@@ -21,8 +21,10 @@ function Home({ isLoggedIn, setIsLoggedIn, setPage }) {
                 console.log(error);
             }
         }
-        if (user.role === 'ADMIN') fetchPendingUsers();
-    }, []);
+        // Optional chaining (?.) lets you safely access properties or call methods on objects that might be null or undefined without causing an error.
+        // when user not logged in and accessing home page, user is null and user?.role will be undefined so it will not throw an error
+        if (isLoggedIn && user?.role === 'ADMIN') fetchPendingUsers();
+    }, [isLoggedIn]);
 
     const handleAcceptReject = async (email, status) => {
         // console.log(email, status);
@@ -62,11 +64,11 @@ function Home({ isLoggedIn, setIsLoggedIn, setPage }) {
     return (
         <>
             <div className="welcomeMsg block w-1/2 mx-auto my-10 text-center shadow-2xl bg-slate-300 p-5 rounded-3xl">
-                <h1 className="text-2xl font-semibold text-slate-500">WELCOME {user.role} {user.name.toUpperCase()}</h1>
+                <h1 className="text-2xl font-semibold text-slate-500">WELCOME {user?.role} {user?.name?.toUpperCase()}</h1>
                 {/* <p>Select an option from the navbar.</p> */}
             </div>
 
-            {user.role === "ADMIN" && (
+            {user?.role === "ADMIN" && (
                 <div className="pendingUsers block mx-auto bg-slate-200 flex-col items-center p-3 m-3 w-8/10 rounded-2xl">
                     {pendingUsers.length === 0 &&
                         <h2 className="block mx-auto w-1/2 text-center p-2 rounded-xl bg-green-100 text-green-700 border border-green-400">No Pending Users for Approval !</h2>

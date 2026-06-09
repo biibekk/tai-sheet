@@ -20,6 +20,13 @@ class AuthService {
             throw new Error("Invalid credentials")
         }
 
+        if(user.approval_status === 'PENDING'){
+            throw new Error("Account Approval Pending")
+        }
+        else if(user.approval_status === 'REJECTED'){
+            throw new Error("Account Rejected")
+        }
+
         // signed token
         const token = jwt.sign(
             {
