@@ -51,7 +51,7 @@ class AuthService {
     };
 
     async register(data) {
-        console.log(data);
+        // console.log(data);
         // return {
         //     success: true,
         //     message: "User registered successfully"
