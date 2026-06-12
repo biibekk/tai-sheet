@@ -70,10 +70,36 @@ export default function Dashboard({ user, pendingUsers, onApprove, onReject, sta
   const formatTime = (d) =>
     d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
+  const [statsValue, setStatsValue] = useState({
+    totalTournaments: 0,
+    registeredParticipants: 0,
+    // pendingApprovals: 0,
+    matchesScheduled: 0,
+    activeTournaments: 0,
+    upcomingTournaments: 0,
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`http://localhost:4000/admin/stats`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        // console.log(data)
+        setStatsValue(data.stats);
+      } catch (err) {
+        console.error("Failed to fetch stats:", err);
+      }
+    }
+    fetchStats();
+  }, []);
+
   const stats = [
     {
       title: "Total Tournaments",
-      value: "12",
+      value: String(statsValue.totalTournaments || 0),
       trend: "+2 this month",
       trendUp: true,
       icon: "🏆",
@@ -82,7 +108,7 @@ export default function Dashboard({ user, pendingUsers, onApprove, onReject, sta
     },
     {
       title: "Registered Participants",
-      value: "1,284",
+      value: String(statsValue.registeredParticipants || 0),
       trend: "+148 this week",
       trendUp: true,
       icon: "🥋",
@@ -100,7 +126,7 @@ export default function Dashboard({ user, pendingUsers, onApprove, onReject, sta
     },
     {
       title: "Matches Scheduled",
-      value: "87",
+      value: String(statsValue.matchesScheduled || 0),
       trend: "+12 this week",
       trendUp: true,
       icon: "⚡",
@@ -304,7 +330,7 @@ export default function Dashboard({ user, pendingUsers, onApprove, onReject, sta
                 <div className="flex items-center gap-1.5">
                   <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
                     <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                      <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
                     </svg>
                   </div>
                   <span className="text-xs font-semibold text-[#0f172a]">{t.registrations}</span>

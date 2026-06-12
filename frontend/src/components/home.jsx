@@ -3,6 +3,7 @@ import AuthPage from "./authentication";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 import Dashboard from "./Dashboard";
+import TournamentPage from "./TournamentPage";
 
 function Home({ isLoggedIn, setIsLoggedIn, setPage }) {
     const [pendingUsers, setPendingUsers] = useState([]);
@@ -85,8 +86,12 @@ function Home({ isLoggedIn, setIsLoggedIn, setPage }) {
                         />
                     )}
 
+                    {activePage === "tournaments" && (
+                        <TournamentPage setActivePage={setActivePage} user={user} />
+                    )}
+
                     {/* Placeholder pages for other sidebar items */}
-                    {activePage !== "dashboard" && (
+                    {activePage !== "dashboard" && activePage !== "tournaments" && (
                         <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-12">
                             <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#1D4ED8] to-[#1e3a8a] flex items-center justify-center shadow-xl">
                                 <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
