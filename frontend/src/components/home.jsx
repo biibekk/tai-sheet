@@ -4,13 +4,24 @@ import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 import Dashboard from "./Dashboard";
 import TournamentPage from "./TournamentPage";
+import InstructorDashboard from "./instructor/InstructorDashboard";
+import StudentsPage from "./instructor/StudentsPage";
+import TournamentRegistrationPage from "./instructor/TournamentRegistrationPage";
+import MyRegistrationsPage from "./instructor/MyRegistrationsPage";
+import MatchSchedulePage from "./instructor/MatchSchedulePage";
+import ResultsPage from "./instructor/ResultsPage";
+import InstructorProfile from "./instructor/InstructorProfile";
 
 function Home({ isLoggedIn, setIsLoggedIn, setPage }) {
     const [pendingUsers, setPendingUsers] = useState([]);
     const [statusUpdateResult, setStatusUpdateResult] = useState({});
-    const [activePage, setActivePage] = useState("dashboard");
 
     const user = JSON.parse(localStorage.getItem("user"));
+    const isInstructor = user?.role === "INSTRUCTOR";
+
+    const [activePage, setActivePage] = useState(
+        isInstructor ? "instructor-dashboard" : "dashboard"
+    );
 
     useEffect(() => {
         const fetchPendingUsers = async () => {
@@ -61,12 +72,74 @@ function Home({ isLoggedIn, setIsLoggedIn, setPage }) {
         return <AuthPage setIsLoggedIn={setIsLoggedIn} setPage={setPage} />;
     }
 
+    // ─── Instructor pages renderer ────────────────────────────────────────────────
+    const renderInstructorPage = () => {
+        switch (activePage) {
+            case "instructor-dashboard":
+                return <InstructorDashboard user={user} setActivePage={setActivePage} />;
+            case "students":
+                return <StudentsPage user={user} />;
+            case "tournament-registration":
+                return <TournamentRegistrationPage user={user} />;
+            case "my-registrations":
+                return <MyRegistrationsPage user={user} />;
+            case "match-schedule":
+                return <MatchSchedulePage user={user} />;
+            case "results":
+                return <ResultsPage user={user} />;
+            case "instructor-profile":
+                return <InstructorProfile user={user} />;
+            default:
+                return <InstructorDashboard user={user} setActivePage={setActivePage} />;
+        }
+    };
+
+    // ─── Admin pages renderer ─────────────────────────────────────────────────────
+    const renderAdminPage = () => {
+        if (activePage === "dashboard") {
+            return (
+                <Dashboard
+                    user={user}
+                    pendingUsers={pendingUsers}
+                    onApprove={(email) => handleAcceptReject(email, "APPROVED")}
+                    onReject={(email) => handleAcceptReject(email, "REJECTED")}
+                    statusUpdateResult={statusUpdateResult}
+                />
+            );
+        }
+        if (activePage === "tournaments") {
+            return <TournamentPage setActivePage={setActivePage} user={user} />;
+        }
+        return (
+            <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-12">
+                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#1D4ED8] to-[#1e3a8a] flex items-center justify-center shadow-xl">
+                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 className="text-2xl font-bold text-[#0f172a] capitalize">{activePage}</h2>
+                    <p className="text-[#64748b] mt-2 text-sm max-w-xs">
+                        This section is coming soon. The <span className="font-semibold capitalize">{activePage}</span> module
+                        is currently under development.
+                    </p>
+                </div>
+                <button
+                    onClick={() => setActivePage("dashboard")}
+                    className="mt-2 px-5 py-2.5 bg-[#1D4ED8] text-white rounded-xl text-sm font-semibold hover:bg-[#1e40af] transition-colors shadow-md"
+                >
+                    ← Back to Dashboard
+                </button>
+            </div>
+        );
+    };
+
     // ─── Logged in → show full dashboard shell ────────────────────────────────────
     return (
         <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
 
             {/* Left Sidebar */}
-            <Sidebar activePage={activePage} setActivePage={setActivePage} />
+            <Sidebar activePage={activePage} setActivePage={setActivePage} user={user} />
 
             {/* Main area */}
             <div className="flex-1 flex flex-col overflow-hidden">
@@ -76,43 +149,7 @@ function Home({ isLoggedIn, setIsLoggedIn, setPage }) {
 
                 {/* Scrollable content area */}
                 <main className="flex-1 overflow-y-auto">
-                    {activePage === "dashboard" && (
-                        <Dashboard
-                            user={user}
-                            pendingUsers={pendingUsers}
-                            onApprove={(email) => handleAcceptReject(email, "APPROVED")}
-                            onReject={(email) => handleAcceptReject(email, "REJECTED")}
-                            statusUpdateResult={statusUpdateResult}
-                        />
-                    )}
-
-                    {activePage === "tournaments" && (
-                        <TournamentPage setActivePage={setActivePage} user={user} />
-                    )}
-
-                    {/* Placeholder pages for other sidebar items */}
-                    {activePage !== "dashboard" && activePage !== "tournaments" && (
-                        <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-12">
-                            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#1D4ED8] to-[#1e3a8a] flex items-center justify-center shadow-xl">
-                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-bold text-[#0f172a] capitalize">{activePage}</h2>
-                                <p className="text-[#64748b] mt-2 text-sm max-w-xs">
-                                    This section is coming soon. The <span className="font-semibold capitalize">{activePage}</span> module
-                                    is currently under development.
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setActivePage("dashboard")}
-                                className="mt-2 px-5 py-2.5 bg-[#1D4ED8] text-white rounded-xl text-sm font-semibold hover:bg-[#1e40af] transition-colors shadow-md"
-                            >
-                                ← Back to Dashboard
-                            </button>
-                        </div>
-                    )}
+                    {isInstructor ? renderInstructorPage() : renderAdminPage()}
                 </main>
             </div>
         </div>
