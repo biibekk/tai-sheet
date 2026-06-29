@@ -285,7 +285,7 @@ export default function StudentsPage() {
       if (modal?.type === "edit") {
         setStudents((prev) => prev.map((s) => s.id === form.id ? { ...form } : s));
       } else {
-        const response = await fetch("http://localhost:4000/students", {
+        const response = await fetch("http://localhost:4000/students/addStudent", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

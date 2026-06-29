@@ -21,23 +21,55 @@ class AdminController {
 
     async approveOrReject(req, res) {
         try {
-            const sql = `UPDATE users
-                    SET approval_status = $1
-                    WHERE email = $2`
             const { email, approval_status } = req.body;
 
-            // console.log(email, approval_status);
+            // Update user status
+            const updateSql = `UPDATE users
+                               SET approval_status = $1
+                               WHERE email = $2
+                               RETURNING id, name, role, belt_rank, academy_name, city`;
+            const result = await pool.query(updateSql, [approval_status, email]);
 
-            const response = await pool.query(sql, [approval_status, email]);
-            // console.log(response)
-            // const data = response.rows; - empty
-            // console.log(data);
+            if (result.rows.length > 0 && approval_status === "APPROVED") {
+                const user = result.rows[0];
+
+                if (user.role === "INSTRUCTOR") {
+                    // Check if instructor profile already exists to prevent duplicate entries
+                    const instructorCheck = await pool.query(
+                        "SELECT id FROM instructors WHERE user_id = $1",
+                        [user.id]
+                    );
+
+                    if (instructorCheck.rows.length === 0) {
+                        // Create dojo entry first
+                        const dojoName = user.academy_name || "Tiger TKD Dojo";
+                        const dojoCity = user.city || "Kathmandu";
+                        const dojoRes = await pool.query(
+                            `INSERT INTO dojos (name, city, owner_id)
+                             VALUES ($1, $2, $3)
+                             RETURNING id`,
+                            [dojoName, dojoCity, user.id]
+                        );
+                        const dojoId = dojoRes.rows[0].id;
+
+                        // Create instructor entry
+                        const beltRank = user.belt_rank || "BLACK";
+                        await pool.query(
+                            `INSERT INTO instructors (user_id, dojo_id, belt_rank)
+                             VALUES ($1, $2, $3)`,
+                            [user.id, dojoId, beltRank]
+                        );
+                        console.log(`Dojo & Instructor created successfully for user ${user.name}`);
+                    }
+                }
+            }
+
             res.status(200).json({
                 success: true,
                 message: `User ${approval_status.toLowerCase()} successfully`
             });
         } catch (error) {
-            console.log(error);
+            console.error("Error in approveOrReject:", error);
             res.status(500).json({
                 status: "error",
                 message: `Failed to update user status`

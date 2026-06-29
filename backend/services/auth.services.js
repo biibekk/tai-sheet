@@ -71,10 +71,10 @@ class AuthService {
 
         const pswdhash = await bcrypt.hash(password, 10);
 
-        const sql = `INSERT INTO users(name, email, phone, password_hash, role)
-        VALUES ($1, $2, $3, $4, 'INSTRUCTOR')`
+        const sql = `INSERT INTO users(name, email, phone, password_hash, role, belt_rank, academy_name, city)
+        VALUES ($1, $2, $3, $4, 'INSTRUCTOR', $5, $6, $7)`
 
-        await pool.query(sql, [fullName, email, phone, pswdhash])
+        await pool.query(sql, [fullName, email, phone, pswdhash, beltRank, academyName, city])
 
         return {
             success: true,

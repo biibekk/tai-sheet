@@ -28,9 +28,9 @@ exports.getAllStudents = async (req, res) => {
 
 exports.createStudent = async (req, res) => {
     try {
-        const { name, dob, gender, belt, weight, experience } = req.body;
+        const { name, dob, gender, belt, weight, experience, status } = req.body;
 
-        // Find instructor and dojo ID from user ID
+        // Fetch instructor details to get instructor_id and dojo_id
         const instRes = await pool.query(
             "SELECT id, dojo_id FROM instructors WHERE user_id = $1",
             [req.user.id]
@@ -42,20 +42,31 @@ exports.createStudent = async (req, res) => {
 
         const instructor = instRes.rows[0];
 
-        // Split name into first and last name
+        // Process name into first_name and last_name
         const nameParts = name.trim().split(/\s+/);
         const first_name = nameParts[0];
         const last_name = nameParts.slice(1).join(" ") || null;
 
-        // Map values to DB enum/types
+        // Map values to DB schema constraints and Enums
         const dbGender = gender.toUpperCase() === "FEMALE" ? "FEMALE" : "MALE";
         const dbExperience = experience === "Beginner" ? "FRESHER" : "EXPERIENCED";
         const dbBelt = belt.toUpperCase();
+        const isActive = status !== "Inactive";
 
+        // Insert into database conforming to schema.sql
         const insertRes = await pool.query(
             `INSERT INTO students (
-                first_name, last_name, date_of_birth, gender, current_belt, current_weight, fight_experience, instructor_id, dojo_id
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+                first_name, 
+                last_name, 
+                date_of_birth, 
+                gender, 
+                current_belt, 
+                current_weight, 
+                fight_experience, 
+                instructor_id, 
+                dojo_id,
+                is_active
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
             [
                 first_name,
                 last_name,
@@ -65,7 +76,8 @@ exports.createStudent = async (req, res) => {
                 weight ? parseFloat(weight) : null,
                 dbExperience,
                 instructor.id,
-                instructor.dojo_id
+                instructor.dojo_id,
+                isActive
             ]
         );
 
