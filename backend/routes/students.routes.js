@@ -1,9 +1,10 @@
 const express = require("express")
 const router = express.Router()
 
-const {getAllStudents} = require("../controllers/students.controller")
+const {getAllStudents, createStudent} = require("../controllers/students.controller")
 const authMiddleware = require("../middlewares/auth.middleware")
 
-router.get("/",authMiddleware.verifyToken,authMiddleware.restrictTo("ADMIN"), getAllStudents)
+router.get("/",authMiddleware.verifyToken,authMiddleware.restrictTo("ADMIN", "INSTRUCTOR"), getAllStudents)
+router.post("/",authMiddleware.verifyToken,authMiddleware.restrictTo("INSTRUCTOR"), createStudent)
 
 module.exports = router

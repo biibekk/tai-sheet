@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // ─── Belt Badge ────────────────────────────────────────────────────────────────
 function BeltBadge({ belt }) {
@@ -217,7 +217,9 @@ const getAge = (dob) => {
 
 // ─── Main Students Page ────────────────────────────────────────────────────────
 export default function StudentsPage() {
-  const [students, setStudents] = useState(INITIAL_STUDENTS);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [beltFilter, setBeltFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -227,6 +229,49 @@ export default function StudentsPage() {
   const belts = ["All", "White", "Yellow", "Orange", "Green", "Blue", "Red", "Black"];
   const statuses = ["All", "Active", "Inactive", "Injured"];
 
+  const fetchStudents = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await fetch("http://localhost:4000/students", {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        const formatted = data.message.map((s) => {
+          const rawBelt = s.current_belt || s.belt || 'White';
+          const formattedBelt = rawBelt.charAt(0).toUpperCase() + rawBelt.slice(1).toLowerCase();
+          return {
+            id: s.id,
+            name: s.name || `${s.first_name} ${s.last_name || ''}`.trim(),
+            dob: s.date_of_birth ? new Date(s.date_of_birth).toISOString().split('T')[0] : '',
+            gender: s.gender ? s.gender.charAt(0).toUpperCase() + s.gender.slice(1).toLowerCase() : 'Male',
+            belt: formattedBelt,
+            weight: s.current_weight ? parseFloat(s.current_weight) : (s.weight ? parseFloat(s.weight) : 0),
+            experience: s.fight_experience === 'FRESHER' ? 'Beginner' : 'Intermediate',
+            status: s.is_active === false ? 'Inactive' : 'Active',
+            medicalNotes: s.medicalNotes || '',
+            emergencyContact: s.emergencyContact || '',
+          };
+        });
+        setStudents(formatted);
+      } else {
+        setError(data.message || "Failed to fetch students");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Network error fetching students");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
   const filtered = students.filter((s) => {
     const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.belt.toLowerCase().includes(search.toLowerCase());
@@ -235,11 +280,29 @@ export default function StudentsPage() {
     return matchSearch && matchBelt && matchStatus;
   });
 
-  const handleSave = (form) => {
-    if (modal?.type === "edit") {
-      setStudents((prev) => prev.map((s) => s.id === form.id ? { ...form } : s));
-    } else {
-      setStudents((prev) => [...prev, { ...form, id: Date.now() }]);
+  const handleSave = async (form) => {
+    try {
+      if (modal?.type === "edit") {
+        setStudents((prev) => prev.map((s) => s.id === form.id ? { ...form } : s));
+      } else {
+        const response = await fetch("http://localhost:4000/students", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(form),
+        });
+        const data = await response.json();
+        if (data.success) {
+          fetchStudents();
+        } else {
+          alert(data.message || "Failed to add student to database");
+        }
+      }
+    } catch (err) {
+      console.error("Save student error:", err);
+      alert("Failed to connect to backend to save student");
     }
   };
 
@@ -318,7 +381,22 @@ export default function StudentsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#f1f5f9]">
-              {filtered.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-16 text-slate-500 text-sm">
+                    <div className="flex flex-col items-center gap-2 justify-center">
+                      <div className="w-8 h-8 border-4 border-[#1D4ED8] border-t-transparent rounded-full animate-spin" />
+                      <span>Loading students...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={8} className="text-center py-16 text-red-500 text-sm font-semibold">
+                    ⚠️ {error}
+                  </td>
+                </tr>
+              ) : filtered.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center py-16 text-slate-400 text-sm">
                     No students found matching your search
