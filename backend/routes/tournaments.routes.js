@@ -7,6 +7,6 @@ const authMiddleware = require("../middlewares/auth.middleware");
 
 // defining routes
 router.get("/", getAllTournaments);
-router.post("/", authMiddleware.verifyToken, authMiddleware.restrictTo("ADMIN"), createTournament);
+router.post("/create", authMiddleware.verifyToken, authMiddleware.restrictTo("ADMIN"), createTournament);
 
 module.exports = router;

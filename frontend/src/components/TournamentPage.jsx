@@ -36,22 +36,25 @@ function TournamentCard({ tournament }) {
   return (
     <div className="bg-white rounded-2xl p-6 border border-[#e2e8f0] shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1">
       <div>
-        <div className="flex items-start justify-between gap-4 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
+        {/* <div className="flex items-start justify-between gap-4 mb-4"> */}
+        {/* <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-xl shrink-0 group-hover:scale-110 transition-transform">
             🥋
-          </div>
-          <StatusBadge status={status} />
-        </div>
+          </div> */}
         <h3 className="text-lg font-bold text-[#0f172a] mb-2 leading-tight group-hover:text-[#1D4ED8] transition-colors">
           {name}
         </h3>
-        <p className="text-sm text-slate-500 flex items-center gap-1.5 mb-4">
+
+        <p className="text-sm text-slate-500 flex items-center gap-1.5 mb-2">
           <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           {location || "Online"}
         </p>
+
+        <StatusBadge status={status} />
+        {/* </div> */}
+
       </div>
 
       <div className="border-t border-[#f1f5f9] pt-4 mt-2 flex flex-col gap-2">
@@ -95,6 +98,15 @@ export default function TournamentPage({ setActivePage, user }) {
     status: "DRAFT",
   });
 
+  // useEffect(() => {
+  //   if (!formError) return;
+  //   const timer = setTimeout(() => {
+  //     setFormError("");
+  //   }, 2500);
+
+  //   return () => clearTimeout(timer);
+  // }, [formError]);
+
   const fetchTournaments = async () => {
     setLoading(true);
     setError(null);
@@ -137,8 +149,32 @@ export default function TournamentPage({ setActivePage, user }) {
       return;
     }
 
+    if(new Date(formData.registration_deadline) > new Date(formData.start_date)){
+      setFormError("Registration deadline cannot be after the start date");
+      setFormSubmitting(false);
+      return;
+    }
+
+    if(new Date(formData.start_date) < new Date()){
+      setFormError("Start date cannot be in the past");
+      setFormSubmitting(false);
+      return;
+    }
+
+    if(new Date(formData.end_date) < new Date()){
+      setFormError("End date cannot be in the past");
+      setFormSubmitting(false);
+      return;
+    }
+
+    if(new Date(formData.registration_deadline) < new Date()){
+      setFormError("Registration deadline cannot be in the past");
+      setFormSubmitting(false);
+      return;
+    }
+
     try {
-      const response = await fetch("http://localhost:4000/tournaments", {
+      const response = await fetch("http://localhost:4000/tournaments/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -229,11 +265,10 @@ export default function TournamentPage({ setActivePage, user }) {
             <button
               key={tab.value}
               onClick={() => setStatusFilter(tab.value)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all ${
-                statusFilter === tab.value
+              className={`px-4 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all ${statusFilter === tab.value
                   ? "bg-[#1D4ED8] text-white shadow-sm"
                   : "text-slate-500 hover:text-[#0f172a] hover:bg-[#f8fafc]"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -318,10 +353,19 @@ export default function TournamentPage({ setActivePage, user }) {
             {/* Modal Form */}
             <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
               {formError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-xl text-sm font-medium">
-                  ⚠️ {formError}
+                <div className="flex justify-center items-center bg-red-50 border border-red-200 rounded-xl">
+                  <div className="w-full text-red-700 px-4 py-2.5 text-sm font-medium">
+                    {formError}
+                  </div>
+                  <button className="ml-2 mr-2 p-1 rounded-full hover:bg-red-200 transition-colors" onClick={() => setFormError("")}>
+                    <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
               )}
+
+              {/* todo set timeout for error or cross button */}
 
               {/* Tournament Name */}
               <div>
